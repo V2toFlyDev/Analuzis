@@ -1,0 +1,25 @@
+# Firma y contraseñas: nunca al repositorio
+tools/*.jks
+tools/*.keystore
+tools/.firma-pass
+tools/*.pem
+*.jks
+
+# Artefactos de compilación
+build/
+out/
+libs/android.jar
+
+# Copias privadas (historial, notas reales, APK de trabajo)
+private/
+
+# APK de distribución local: no se publica en el repositorio
+dist/*.apk
+
+# Adjuntos de la conversación y metadatos del entorno
+.cloud-attachments/
+.freebuff/
+
+# Facturas y copias: datos personales
+*.pdf
+*.log

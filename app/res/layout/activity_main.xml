@@ -1,0 +1,812 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingTop="28dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="36dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.28"
+                android:text="ANALUZIS"
+                android:textColor="@color/accent"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/verTop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/bg_pill_mute"
+                android:fontFamily="sans-serif-medium"
+                android:paddingLeft="9dp"
+                android:paddingTop="3dp"
+                android:paddingRight="9dp"
+                android:paddingBottom="3dp"
+                android:textColor="@color/muted"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-medium"
+                android:text="Tu tarifa, en claro"
+                android:textColor="@color/text"
+                android:textSize="28sp" />
+
+            <TextView
+                android:id="@+id/btnHelp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_pill_mute"
+                android:contentDescription="Ayuda"
+                android:gravity="center"
+                android:text="?"
+                android:textColor="@color/accent"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="22dp"
+            android:lineSpacingExtra="4dp"
+            android:text="Compara lo que pagas con las ofertas reales del mercado y mira cuánto puedes ahorrar."
+            android:textColor="@color/muted"
+            android:textSize="14sp" />
+
+        <!-- 0. Datos de suministro (del QR) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                style="@style/Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TUS DATOS DE SUMINISTRO" />
+
+            <TextView
+                android:id="@+id/supplyDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:lineSpacingExtra="4dp"
+                android:text="Aún no los tengo: escanea el QR de una factura y los leo. El QR no se guarda como factura, solo aporta estos datos."
+                android:textColor="@color/muted"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/linkDatadis"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:text="Curva de consumo (Datadis) ›"
+                android:textColor="@color/accent"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- 1. Factura -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                style="@style/Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1 · TU FACTURA" />
+
+            <LinearLayout
+                android:id="@+id/billInside"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="vertical" />
+
+            <Button
+                android:id="@+id/btnAdd"
+                style="@style/BtnPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Añadir factura" />
+
+            <TextView
+                android:id="@+id/btnClear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:padding="4dp"
+                android:text="Borrar mis datos"
+                android:textColor="@color/muted"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <!-- Historial plegable -->
+            <LinearLayout
+                android:id="@+id/historyToggle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <TextView
+                    android:id="@+id/historyTitle"
+                    style="@style/Label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="FACTURAS GUARDADAS" />
+
+                <TextView
+                    android:id="@+id/historyChevron"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="▾"
+                    android:textColor="@color/muted"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/historyPanel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/historySummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="3dp"
+                    android:text="Sin facturas todavía."
+                    android:textColor="@color/muted"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:id="@+id/historyBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/linkMonths"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:text="Mes a mes: factura y placas ›"
+                android:textColor="@color/accent"
+                android:textSize="12sp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- 2. Tu tarifa real -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                style="@style/Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2 · TU TARIFA REAL" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:lineSpacingExtra="3dp"
+                android:text="Los leo del detalle de tu factura en el PDF. Si alguno no aparece, escríbelo tú: con estos precios compruebo que la factura se reproduce al céntimo."
+                android:textColor="@color/muted"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Energía hoy (€/kWh)"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/inPe"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_input"
+                        android:digits="0123456789.,"
+                        android:hint="0,1344"
+                        android:inputType="numberDecimal"
+                        android:paddingLeft="14dp"
+                        android:paddingRight="14dp"
+                        android:singleLine="true"
+                        android:textColor="@color/text"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Excedentes (€/kWh)"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/inPs"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_input"
+                        android:digits="0123456789.,"
+                        android:hint="0,060"
+                        android:inputType="numberDecimal"
+                        android:paddingLeft="14dp"
+                        android:paddingRight="14dp"
+                        android:singleLine="true"
+                        android:textColor="@color/text"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/linkTramos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:text="Precios por tramo P1/P2/P3 ›"
+                android:textColor="@color/muted"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Potencia P1 (€/kW·día)"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/inPp1"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_input"
+                        android:digits="0123456789.,"
+                        android:hint="0,123030"
+                        android:inputType="numberDecimal"
+                        android:paddingLeft="14dp"
+                        android:paddingRight="14dp"
+                        android:singleLine="true"
+                        android:textColor="@color/text"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Potencia P2 (€/kW·día)"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/inPp2"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_input"
+                        android:digits="0123456789.,"
+                        android:hint="0,037337"
+                        android:inputType="numberDecimal"
+                        android:paddingLeft="14dp"
+                        android:paddingRight="14dp"
+                        android:singleLine="true"
+                        android:textColor="@color/text"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bono social (€/día)"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/inBono"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_input"
+                        android:digits="0123456789.,"
+                        android:hint="0,024688"
+                        android:inputType="numberDecimal"
+                        android:paddingLeft="14dp"
+                        android:paddingRight="14dp"
+                        android:singleLine="true"
+                        android:textColor="@color/text"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Contador (€/día)"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/inRent"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_input"
+                        android:digits="0123456789.,"
+                        android:hint="0,044712"
+                        android:inputType="numberDecimal"
+                        android:paddingLeft="14dp"
+                        android:paddingRight="14dp"
+                        android:singleLine="true"
+                        android:textColor="@color/text"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/priceSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:lineSpacingExtra="3dp"
+                android:text="Aún no tengo los precios. Importa el PDF de tu factura y los relleno solo."
+                android:textColor="@color/muted"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/linkPvpc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:text="PVPC con tu curva (ESIOS) ›"
+                android:textColor="@color/accent"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- 3. Autoconsumo -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                style="@style/Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3 · TUS PLACAS Y EXCEDENTES" />
+
+            <Switch
+                android:id="@+id/swAuto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Tengo autoconsumo"
+                android:textColor="@color/text"
+                android:textSize="15sp" />
+
+            <Switch
+                android:id="@+id/swBattery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Tengo batería virtual"
+                android:textColor="@color/text"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:lineSpacingExtra="3dp"
+                android:text="Con batería virtual, el saldo sobrante de un mes pasa a los siguientes (suele caducar al año). Sin ella, lo que no gastes en esa factura se pierde. Cambia el reparto por meses, no el total anual."
+                android:textColor="@color/muted"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btnSolarAdd"
+                style="@style/BtnSecondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Añadir un mes del inversor" />
+
+            <TextView
+                android:id="@+id/solarSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:lineSpacingExtra="3dp"
+                android:text="Añade los meses del inversor (autoconsumo y vertido a la red) y sumo yo el año. Con 12 meses uso esas sumas para comparar."
+                android:textColor="@color/muted"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/linkSolar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:text="Ver los meses guardados ›"
+                android:textColor="@color/accent"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <TextView
+                style="@style/Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="EXCEDENTES" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:lineSpacingExtra="3dp"
+                android:text="Los kWh vertidos salen de tus meses del inversor; si todavía no los has metido, ponlos aquí."
+                android:textColor="@color/muted"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:minLines="2"
+                        android:text="Autoconsumo anual (kWh)"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/inAutoKwh"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_input"
+                        android:digits="0123456789.,"
+                        android:hint="Ej.: 5.000"
+                        android:inputType="numberDecimal"
+                        android:paddingLeft="14dp"
+                        android:paddingRight="14dp"
+                        android:singleLine="true"
+                        android:textColor="@color/text"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="bottom"
+                        android:minLines="2"
+                        android:text="kWh vertidos al año"
+                        android:textColor="@color/muted"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/inSurplusKwh"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_input"
+                        android:digits="0123456789.,"
+                        android:hint="kWh"
+                        android:inputType="numberDecimal"
+                        android:paddingLeft="14dp"
+                        android:paddingRight="14dp"
+                        android:singleLine="true"
+                        android:textColor="@color/text"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/autoHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:lineSpacingExtra="3dp"
+                android:text="Son los kWh de tus placas que has usado en casa en un año, no los que has vertido a la red: sale en el informe anual de tu inversor. Si metes los 12 meses, la cifra sale sola de ahí."
+                android:textColor="@color/muted"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Precio que te pagan (€/kWh, sin IVA) — solo si lo sabes"
+                android:textColor="@color/muted"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/inSurplusPrice"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_input"
+                android:digits="0123456789.,"
+                android:hint="0,060 (si lo dejo vacío, lo calculo con tu factura)"
+                android:inputType="numberDecimal"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:singleLine="true"
+                android:textColor="@color/text"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="€ que te pagaron"
+                android:textColor="@color/muted"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/inSurplusEur"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_input"
+                android:digits="0123456789.,"
+                android:hint="€"
+                android:inputType="numberDecimal"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:singleLine="true"
+                android:textColor="@color/text"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/surplusSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:lineSpacingExtra="3dp"
+                android:text="Sin excedentes: comparo solo lo que compras de la red."
+                android:textColor="@color/accent"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <!-- 4. Filtros -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                style="@style/Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4 · QUÉ QUIERES EN LA OFERTA" />
+
+            <CheckBox
+                android:id="@+id/cbFijo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:buttonTint="@color/accent"
+                android:text="Solo precio fijo (sin PVPC)"
+                android:textColor="@color/text"
+                android:textSize="14sp" />
+
+            <CheckBox
+                android:id="@+id/cbAuto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/accent"
+                android:text="Con autoconsumo (excedentes)"
+                android:textColor="@color/text"
+                android:textSize="14sp" />
+
+            <CheckBox
+                android:id="@+id/cbVerde"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/accent"
+                android:text="Solo energía verde"
+                android:textColor="@color/text"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:lineSpacingExtra="3dp"
+                android:text="Cobrar excedentes no implica tener batería virtual. El comparador no publica qué tarifas la llevan, así que compruébala en la web de cada comercializadora."
+                android:textColor="@color/muted"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnCompare"
+            style="@style/BtnPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Comparar ofertas"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnManual"
+            style="@style/BtnSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Comparador manual" />
+
+        <Button
+            android:id="@+id/btnManualList"
+            style="@style/BtnSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Listado manual" />
+
+        <TextView
+            android:id="@+id/linkCenso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="¿Quién falta en el comparador? ›"
+            android:textColor="@color/accent"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:lineSpacingExtra="3dp"
+            android:text="Datos del comparador oficial de ofertas de energía de la CNMC. Tus datos se guardan solo en este móvil."
+            android:textColor="@color/muted"
+            android:textSize="11sp" />
+    </LinearLayout>
+</ScrollView>

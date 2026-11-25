@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:statusBarColor">@color/bg</item>
+        <item name="android:navigationBarColor">@color/bg</item>
+        <item name="android:colorPrimary">@color/accent</item>
+        <item name="android:colorPrimaryDark">@color/bg</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:textColorPrimary">@color/text</item>
+        <item name="android:textColorSecondary">@color/muted</item>
+        <item name="android:textColorHint">@color/muted</item>
+        <item name="android:alertDialogTheme">@style/Theme.Analuzis.Dialog</item>
+    </style>
+
+    <!-- Diálogos: tarjeta oscura redondeada, título claro y botones sin mayúsculas. -->
+    <style name="Theme.Analuzis.Dialog" parent="@android:style/Theme.Material.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/bg_dialog</item>
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">94%</item>
+        <item name="android:windowTitleStyle">@style/Analuzis.DialogTitle</item>
+        <item name="android:buttonBarStyle">@style/DialogButtons</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/Analuzis.DialogButton</item>
+        <item name="android:buttonBarNeutralButtonStyle">@style/Analuzis.DialogButton</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/Analuzis.DialogButtonMuted</item>
+        <item name="android:textAppearanceMedium">@style/Analuzis.DialogText</item>
+        <item name="android:textColorPrimary">@color/text</item>
+        <item name="android:textColorSecondary">@color/text_soft</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
+
+    <style name="Analuzis.DialogTitle" parent="@android:style/TextAppearance.Material.DialogWindowTitle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/text</item>
+    </style>
+
+    <style name="Analuzis.DialogText" parent="@android:style/TextAppearance.Material.Subhead">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text_soft</item>
+        <item name="android:lineSpacingExtra">4dp</item>
+    </style>
+
+    <style name="Analuzis.DialogButton" parent="@android:style/Widget.Material.Button.Borderless">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingLeft">14dp</item>
+        <item name="android:paddingRight">14dp</item>
+    </style>
+
+    <style name="Analuzis.DialogButtonMuted" parent="Analuzis.DialogButton">
+        <item name="android:textColor">@color/muted</item>
+    </style>
+
+    <style name="DialogButtons">
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:gravity">end|center_vertical</item>
+    </style>
+
+    <style name="BtnPrimary" parent="@android:style/Widget.Material.Button">
+        <item name="android:background">@drawable/bg_button_primary</item>
+        <item name="android:textColor">#08130C</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingLeft">18dp</item>
+        <item name="android:paddingRight">18dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <style name="BtnSecondary" parent="@android:style/Widget.Material.Button">
+        <item name="android:background">@drawable/bg_button_secondary</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingLeft">18dp</item>
+        <item name="android:paddingRight">18dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <style name="Label" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/muted</item>
+        <item name="android:letterSpacing">0.12</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+</resources>
