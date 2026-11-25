@@ -801,6 +801,17 @@
             android:textSize="13sp" />
 
         <TextView
+            android:id="@+id/linkBackup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="Copia de seguridad y restauración ›"
+            android:textColor="@color/accent"
+            android:textSize="13sp" />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"

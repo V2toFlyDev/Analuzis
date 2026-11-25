@@ -20,6 +20,7 @@ ESIOS ni a ninguna comercializadora eléctrica.
   pagan; puede leer la curva horaria de Datadis.
 - **Todo en el móvil**: facturas, precios y ofertas se guardan localmente. No hay
   cuentas, nube, analítica ni publicidad.
+- **Copia de seguridad**: guarda y restaura tus datos y PDFs en un archivo local.
 
 ## Privacidad
 
@@ -35,14 +36,15 @@ Los detalles están en [PRIVACY.md](PRIVACY.md).
 
 ## Estado
 
-- Versión estable: **1.6** (`versionCode` 11).
+- Versión estable: **1.0** (`versionCode` 12).
 - App Android nativa, Java + XML, sin Gradle para el APK de pruebas.
 - La APK de distribución **no se guarda en este repositorio**.
 - **Fase 1 completada**: repositorio público y documentación.
 - **Fase 2**: preparación de Google Play; todavía no publicada.
 - **Fase 3**: PWA para iOS, posterior a Play.
-- Las instalaciones de la 1.6 usan una firma anterior; las compilaciones nuevas
-  usan una firma distinta y no las actualizan sin exportar/importar y desinstalar.
+- Las instalaciones anteriores (1.6 y 1.6-copia) usan una firma anterior; las
+  compilaciones nuevas usan una firma distinta y no las actualizan sin
+  exportar/importar y desinstalar.
 
 El detalle de las fases está en [ROADMAP.md](ROADMAP.md).
 

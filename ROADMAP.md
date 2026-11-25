@@ -18,8 +18,9 @@ privadas.
   `CN=Analuzis, O=Analuzis, C=ES`.
 - La clave anterior se conserva como copia privada. **La firma nueva no puede
   actualizar una instalación firmada con la clave anterior**: antes de sustituir
-  la app instalada hay que exportar los datos, desinstalar e importarlos. Esa
-  exportación/importación todavía no existe y es el primer trabajo de la Fase 2.
+  la app instalada hay que exportar los datos, desinstalar e importarlos. La
+  copia/restauración ya está implementada; falta validar la restauración en la
+  instalación nueva.
 
 ## Fase 2 — Google Play
 
@@ -30,12 +31,12 @@ instalaciones actuales y sin publicar claves ni datos personales.
 
 ### Orden de trabajo
 
-1. **Exportar e importar datos.** Añadir un formato JSON versionado con perfil,
-   facturas y sus datos, precios, placas, excedentes y ofertas manuales. No
-   incluir credenciales de Datadis ni el token de ESIOS: se vuelven a introducir.
-   Los PDFs se pueden exportar aparte o quedar fuera en la primera versión; hay
-   que decidirlo antes de cambiar la app instalada. La exportación es también la
-   entrada prevista para la Fase 3.
+1. **Exportar e importar datos.** Ya implementado en la build de prueba: JSON
+   versionado con perfil, facturas y sus datos, precios, placas, excedentes,
+   ofertas manuales, curva de Datadis, meses del inversor, PVPC y PDFs. No
+   incluye credenciales de Datadis ni el token de ESIOS: se vuelven a introducir.
+   Falta probarlo en la instalación nueva y validar la restauración. La
+   exportación es también la entrada prevista para la Fase 3.
 2. **Firma y Play App Signing.** La clave nueva ya existe y se usará como clave de
    subida. Decidir si Play App Signing genera la clave final o si se registra la
    actual. No publicar nunca el keystore ni la contraseña.
@@ -60,11 +61,12 @@ instalaciones actuales y sin publicar claves ni datos personales.
    completar la prueba cerrada con 12 testadores durante 14 días.
 8. **Control de calidad.** Instalación limpia, exportación/importación,
    actualización desde una instalación compatible, cámara/QR, PDF, comparador,
-   PVPC, Datadis, modo offline y borrado de datos. La actualización desde una 1.6
-   con la firma anterior no es posible sin desinstalar; probar el recorrido de
-   exportar, desinstalar, instalar e importar.
-9. **Versión.** Candidata 1.7 con `versionCode` 12, salvo que la prueba exija otra
-   numeración.
+   PVPC, Datadis, modo offline y borrado de datos. La actualización desde la
+   instalación anterior (1.6-copia) con la firma antigua no es posible sin
+   desinstalar; probar el recorrido de exportar, desinstalar, instalar e importar.
+9. **Versión.** 1.0 con `versionCode` 12. El nombre visible se reinicia, pero el
+   código sigue siendo mayor que el 11 anterior para no cerrar futuras
+   actualizaciones.
 
 ### Criterios de aceptación
 
@@ -80,7 +82,7 @@ instalaciones actuales y sin publicar claves ni datos personales.
 - Gradle frente a `bundletool` para generar el AAB.
 - Dónde alojar la política de privacidad pública.
 - Clave de subida y configuración concreta de Play App Signing.
-- Si la primera exportación incluye PDFs o solo datos estructurados.
+- Si la PWA reutiliza los PDFs de la copia o solo los datos estructurados.
 - Textos, capturas y clasificación de la ficha.
 
 ## Fase 3 — PWA para iOS

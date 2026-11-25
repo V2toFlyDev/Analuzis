@@ -11,18 +11,21 @@ ningún usuario: los ejemplos y perfiles que aparecen son ficticios.
 
 ## Estado
 
-- Versión estable: **1.6** (`versionCode` 11).
+- Versión estable: **1.0** (`versionCode` 12).
 - La app compila con `bash tools/build.sh`; el APK de distribución no se guarda en
   el repositorio (se genera en `out/` y se conserva solo en local).
 - La clave de firma (`tools/release.jks`) y su contraseña (`tools/.firma-pass`) no
   se versionan nunca.
 - Fase 1 completada. El plan de Fase 2 (Google Play) y Fase 3 (PWA iOS) está en
   [ROADMAP.md](ROADMAP.md).
-- La 1.6 actual no está preparada para Play: genera APK, usa `targetSdk 35`,
+- La 1.0 actual no está preparada para Play: genera APK, usa `targetSdk 35`,
   mantiene `allowBackup=true` y no cifra las credenciales.
 - La firma actual usa el alias `V2toFlyDev` y el certificado
   `CN=Analuzis, O=Analuzis, C=ES`. Las instalaciones firmadas con la clave anterior
   no se actualizan con esta firma: hace falta exportar/importar y desinstalar.
+- La copia/restauración local ya está implementada en la versión 1.0:
+  incluye preferencias, facturas, PDFs, curva de Datadis, meses del inversor y
+  PVPC; excluye NIF, contraseña de Datadis y token de ESIOS.
 
 ## Cómo compilar
 
@@ -37,7 +40,7 @@ bash tools/build.sh
 - `bash tools/build.sh` genera la versión estable indicada en el manifiesto.
 - `VERSION=testN bash tools/build.sh` genera una versión de prueba con otro
   `versionName` y el mismo `versionCode`.
-- Para subir versión: `VERSION=1.7 VERSION_CODE=12 bash tools/build.sh`.
+- Para subir versión: `VERSION=1.1 VERSION_CODE=13 bash tools/build.sh`.
 - La firma se toma de `tools/release.jks`; la contraseña, de
   `ANALUZIS_STORE_PASS` o de `tools/.firma-pass`. Si falta el keystore, el script
   crea uno nuevo con `CN=Analuzis, O=Analuzis, C=ES`; eso cambia la firma y obliga
@@ -64,6 +67,8 @@ recorren carpetas del móvil ni del PC desde la app.
   - `Datadis`, `Curve`, `SolarMonth`: curva horaria y meses solares.
   - `Esios`, `Pvpc`: PVPC.
   - `Store`, `Fmt`, `Dialogs`.
+  - `Backup`, `BackupActivity`: copia y restauración local en JSON, con selector
+    de archivos del sistema y sin credenciales.
 - `app/res/`: layouts, estilos, colores y recursos.
 - `tools/build.sh`: compilación y firma sin Gradle.
 - `tools/PdfCheck.java` y `tools/PriceCheck.java`: comprobaciones de escritorio
@@ -201,9 +206,10 @@ usuarios. `private/` está ignorado y contiene las copias de trabajo. Para Play
 Store hacen falta, además: AAB, `targetSdk 36`, Play App Signing, política de
 privacidad pública, Data safety, `allowBackup` controlado, credenciales cifradas,
 modo demo para revisores y la prueba cerrada de 12 testers durante 14 días. Ver
-[ROADMAP.md](ROADMAP.md). La clave nueva ya existe; la exportación/importación
-sigue pendiente antes de distribuir, y la 1.6 instalada no se actualiza con la
-firma nueva.
+[ROADMAP.md](ROADMAP.md). La clave nueva ya existe; la copia/restauración está
+en la versión 1.0, pero falta validarla en la instalación nueva antes de
+distribuir. La instalación anterior (1.6-copia) no se actualiza con la firma
+nueva.
 
 ## Licencia
 

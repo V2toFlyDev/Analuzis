@@ -19,11 +19,14 @@ cp "$PLATFORM" libs/android.jar
 echo "[1/6] compilando recursos"
 "$BT/aapt2.exe" compile --dir app/res -o build/res.zip
 
-# El versionName del manifiesto manda sobre --version-name, así que para desarrollo se
-# genera una copia del manifiesto con el nombre de la versión pedida.
+# El manifiesto manda sobre --version-name/--version-code, así que para desarrollo se
+# genera una copia con el nombre y el código de versión pedidos.
 MANIFEST=app/AndroidManifest.xml
-if [ -n "${VERSION:-}" ]; then
-  sed 's/android:versionName="[^"]*"/android:versionName="'"$VERSION"'"/' \
+VERSION_NAME="${VERSION:-1.0}"
+VERSION_NUMBER="${VERSION_CODE:-12}"
+if [ -n "${VERSION:-}" ] || [ -n "${VERSION_CODE:-}" ]; then
+  sed -e 's/android:versionName="[^"]*"/android:versionName="'"$VERSION_NAME"'"/' \
+      -e 's/android:versionCode="[^"]*"/android:versionCode="'"$VERSION_NUMBER"'"/' \
     app/AndroidManifest.xml > build/AndroidManifest.xml
   MANIFEST=build/AndroidManifest.xml
 fi
@@ -37,10 +40,10 @@ echo "[2/6] enlazando recursos y manifest"
   --java build/gen \
   -R build/res.zip \
   --min-sdk-version 26 --target-sdk-version 35 \
-  --version-code "${VERSION_CODE:-11}" --version-name "${VERSION:-1.6}"
-# La 1.6 es la estable (versionCode 11). Para pruebas, el nombre cambia y el código no:
+  --version-code "$VERSION_NUMBER" --version-name "$VERSION_NAME"
+# La 1.0 es la estable (versionCode 12). Para pruebas, el nombre cambia y el código no:
 #   VERSION=test82 bash tools/build.sh
-# y para subir la versión de verdad: VERSION=1.7 VERSION_CODE=12 bash tools/build.sh
+# y para subir la versión de verdad: VERSION=1.1 VERSION_CODE=13 bash tools/build.sh
 
 echo "[3/6] compilando Java"
 find app/java build/gen -name '*.java' > build/sources.txt
@@ -59,7 +62,7 @@ python tools/adddex.py build/base.apk build/dex/classes.dex build/unsigned.apk
 
 echo "[6/6] firmando"
 KS=tools/release.jks
-ALIAS=V2toFlyDev
+ALIAS="${ANALUZIS_KEY_ALIAS:-V2toFlyDev}"
 # La contraseña NO está en este script: se toma de un fichero local ignorado por git
 # (tools/.firma-pass) o de la variable de entorno ANALUZIS_STORE_PASS.
 PASSFILE=tools/.firma-pass

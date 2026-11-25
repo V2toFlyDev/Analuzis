@@ -63,6 +63,19 @@ Los datos permanecen en el móvil hasta que los borras:
   los datos de la app en la cuenta de Google del dispositivo. Puedes desactivarla
   en los ajustes de Android.
 
+## Copia de seguridad
+
+La app permite crear un archivo de copia de seguridad y restaurarlo desde el
+selector de archivos del móvil. La copia incluye las facturas y sus PDFs, el
+perfil, la curva de Datadis, los meses del inversor, el PVPC y las ofertas
+manuales. No incluye el NIF ni la contraseña de Datadis, ni el token de ESIOS:
+después de restaurar hay que volver a introducirlos.
+
+El archivo lo eliges y lo guardas tú. Contiene datos personales y facturas, así
+que debes conservarlo en un lugar seguro; la app no lo envía al desarrollador ni
+a ningún servidor. Al restaurar, los datos actuales de la app se sustituyen por
+los de la copia.
+
 ## Seguridad
 
 Las comunicaciones con los servicios externos se hacen por HTTPS. Las

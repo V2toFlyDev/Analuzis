@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
     private static final int REQ_LIVE = 13;
     private static final int REQ_PDF = 15;
     private static final int REQ_DIAG = 16;
+    private static final int REQ_BACKUP = 17;
     private static final int REQ_CAMERA = 23;
 
     private Store store;
@@ -59,7 +60,7 @@ public class MainActivity extends Activity {
     private TextView solarSummary;
     private TextView surplusSummary, priceSummary, historySummary, historyTitle, historyChevron;
     private TextView supplyDetails;
-    private TextView monthlyLink, solarLink, datadisLink, pvpcLink, linkTramos, censoLink;
+    private TextView monthlyLink, solarLink, datadisLink, pvpcLink, linkTramos, censoLink, backupLink;
     private LinearLayout historyBox, historyPanel, historyToggle, billInside;
     private CheckBox cbFijo, cbAuto, cbVerde;
 
@@ -90,6 +91,7 @@ public class MainActivity extends Activity {
         solarLink = findViewById(R.id.linkSolar);
         linkTramos = findViewById(R.id.linkTramos);
         censoLink = findViewById(R.id.linkCenso);
+        backupLink = findViewById(R.id.linkBackup);
         billInside = findViewById(R.id.billInside);
         btnClear = findViewById(R.id.btnClear);
         btnHelp = findViewById(R.id.btnHelp);
@@ -163,6 +165,13 @@ public class MainActivity extends Activity {
                 + "una cuenta en esios.ree.es y copia tu token personal; la app lo pide una vez. "
                 + "Solo compara el término de energía, no la potencia.");
 
+        Dialogs.section(this, body, "Copia de seguridad");
+        Dialogs.note(this, body, "Al final de la pantalla principal puedes crear un archivo con "
+                + "tus facturas y PDFs, la curva de Datadis, los meses del inversor y el PVPC. "
+                + "No incluye el NIF ni la contraseña de Datadis, ni el token de ESIOS: después "
+                + "de restaurar hay que volver a introducirlos. Restaurar sustituye los datos "
+                + "actuales y el archivo contiene datos personales; guárdalo en un sitio seguro.");
+
         Dialogs.section(this, body, "Consejo");
         Dialogs.note(this, body, "Cuantas más facturas y meses de placas metas, mejor sale la "
                 + "comparación. Si algo no cuadra, el detalle de cada factura dice qué dato falla.");
@@ -207,6 +216,8 @@ public class MainActivity extends Activity {
         linkTramos.setOnClickListener(v -> showTramos());
         solarLink.setOnClickListener(v -> showSolarMonths());
         censoLink.setOnClickListener(v -> CensoDialog.show(this, store));
+        backupLink.setOnClickListener(v -> startActivityForResult(
+                new Intent(this, BackupActivity.class), REQ_BACKUP));
 
         swAuto.setOnCheckedChangeListener((b, on) -> {
             if (binding) return;
@@ -1537,6 +1548,10 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int req, int res, Intent data) {
         super.onActivityResult(req, res, data);
         if (res != RESULT_OK) return;
+        if (req == REQ_BACKUP) {
+            render();
+            return;
+        }
         if (req == REQ_CAM && pendingPhoto != null && pendingPhoto.exists()) {
             processImage(Uri.fromFile(pendingPhoto));
         } else if (req == REQ_GAL && data != null && data.getData() != null) {

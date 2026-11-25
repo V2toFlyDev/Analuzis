@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /** Guarda en el propio móvil la factura y los ajustes. Sin nube. */
@@ -549,6 +550,71 @@ public class Store {
 
     public void setSupplierName(String name) {
         if (name != null && !name.isEmpty()) sp.edit().putString("supplierName", name).apply();
+    }
+
+    /**
+     * Copia todas las preferencias menos las credenciales. Cada valor lleva su tipo para
+     * poder restaurarlo sin convertir enteros en flotantes ni perder booleanos.
+     */
+    public JSONObject exportPrefs() throws Exception {
+        JSONObject out = new JSONObject();
+        for (java.util.Map.Entry<String, ?> e : sp.getAll().entrySet()) {
+            String key = e.getKey();
+            if (isSecretKey(key)) continue;
+            Object value = e.getValue();
+            JSONObject w = new JSONObject();
+            if (value instanceof Boolean) {
+                w.put("t", "b");
+                w.put("v", value);
+            } else if (value instanceof Integer) {
+                w.put("t", "i");
+                w.put("v", value);
+            } else if (value instanceof Long) {
+                w.put("t", "l");
+                w.put("v", value);
+            } else if (value instanceof Float) {
+                w.put("t", "f");
+                w.put("v", ((Float) value).doubleValue());
+            } else if (value instanceof String) {
+                w.put("t", "s");
+                w.put("v", value);
+            } else {
+                continue;
+            }
+            out.put(key, w);
+        }
+        return out;
+    }
+
+    /** Sustituye los datos de la app, pero conserva las credenciales que ya hubiera. */
+    public void restorePrefs(JSONObject prefs) throws Exception {
+        if (prefs == null) throw new IllegalArgumentException("La copia no trae datos.");
+        SharedPreferences.Editor ed = sp.edit();
+        for (String key : new ArrayList<>(sp.getAll().keySet())) {
+            if (!isSecretKey(key)) ed.remove(key);
+        }
+        Iterator<String> it = prefs.keys();
+        while (it.hasNext()) {
+            String key = it.next();
+            if (isSecretKey(key)) continue;
+            JSONObject w = prefs.optJSONObject(key);
+            if (w == null) continue;
+            String t = w.optString("t", "");
+            if ("b".equals(t)) ed.putBoolean(key, w.optBoolean("v", false));
+            else if ("i".equals(t)) ed.putInt(key, w.optInt("v", 0));
+            else if ("l".equals(t)) ed.putLong(key, w.optLong("v", 0));
+            else if ("f".equals(t)) ed.putFloat(key, (float) w.optDouble("v", 0));
+            else if ("s".equals(t)) ed.putString(key, w.optString("v", ""));
+        }
+        ed.apply();
+    }
+
+    /** Nunca se incluyen en una copia ni se restauran desde ella. */
+    public static boolean isSecretKey(String key) {
+        if (key == null) return true;
+        String k = key.toLowerCase(java.util.Locale.ROOT);
+        return k.contains("pass") || k.contains("token") || k.contains("secret")
+                || k.contains("credential") || k.equals("datadisnif");
     }
 
     /** Lee un ajuste numérico aunque se guardara antes como entero. */
