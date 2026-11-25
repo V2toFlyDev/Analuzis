@@ -224,6 +224,18 @@
                 android:textColor="@color/accent"
                 android:textSize="12sp"
                 android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/linkTariffChanges"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:text="Cambios de tarifa ›"
+                android:textColor="@color/accent"
+                android:textSize="12sp"
+                android:visibility="gone" />
         </LinearLayout>
 
         <!-- 2. Tu tarifa real -->

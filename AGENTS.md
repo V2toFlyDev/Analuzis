@@ -11,21 +11,23 @@ ningún usuario: los ejemplos y perfiles que aparecen son ficticios.
 
 ## Estado
 
-- Versión estable: **1.0** (`versionCode` 12).
+- Versión estable: **1.1** (`versionCode` 13).
 - La app compila con `bash tools/build.sh`; el APK de distribución no se guarda en
   el repositorio (se genera en `out/` y se conserva solo en local).
 - La clave de firma (`tools/release.jks`) y su contraseña (`tools/.firma-pass`) no
   se versionan nunca.
 - Fase 1 completada. El plan de Fase 2 (Google Play) y Fase 3 (PWA iOS) está en
   [ROADMAP.md](ROADMAP.md).
-- La 1.0 actual no está preparada para Play: genera APK, usa `targetSdk 35`,
+- La 1.1 actual no está preparada para Play: genera APK, usa `targetSdk 35`,
   mantiene `allowBackup=true` y no cifra las credenciales.
 - La firma actual usa el alias `V2toFlyDev` y el certificado
   `CN=Analuzis, O=Analuzis, C=ES`. Las instalaciones firmadas con la clave anterior
   no se actualizan con esta firma: hace falta exportar/importar y desinstalar.
-- La copia/restauración local ya está implementada en la versión 1.0:
+- La copia/restauración local ya está implementada en la versión 1.1:
   incluye preferencias, facturas, PDFs, curva de Datadis, meses del inversor y
   PVPC; excluye NIF, contraseña de Datadis y token de ESIOS.
+- La detección de cambios de tarifa guarda sus comparaciones en
+  `tariffChanges` (preferencias) y las muestra en «Cambios de tarifa».
 
 ## Cómo compilar
 
@@ -60,8 +62,8 @@ recorren carpetas del móvil ni del PC desde la app.
   - `ResultsActivity`: comparador CNMC, PVPC y detalle de ofertas.
   - `ManualActivity` / `ManualListActivity`: ofertas escritas a mano.
   - `BillData`: perfil, facturas, precios, reprecio y comparación.
-  - `Invoice`, `History`, `PdfReader`, `PdfPrices`, `PdfQr`, `Pdfs`: facturas,
-    lectura de PDF, QR y copias locales.
+  - `Invoice`, `TariffChange`, `History`, `PdfReader`, `PdfPrices`, `PdfQr`,
+    `Pdfs`: facturas, comparación de tarifas, lectura de PDF, QR y copias locales.
   - `CnmcClient`, `Offer`, `Web`, `Censo`: comparador de la CNMC, fichas, webs y
     censo.
   - `Datadis`, `Curve`, `SolarMonth`: curva horaria y meses solares.
@@ -207,7 +209,7 @@ Store hacen falta, además: AAB, `targetSdk 36`, Play App Signing, política de
 privacidad pública, Data safety, `allowBackup` controlado, credenciales cifradas,
 modo demo para revisores y la prueba cerrada de 12 testers durante 14 días. Ver
 [ROADMAP.md](ROADMAP.md). La clave nueva ya existe; la copia/restauración está
-en la versión 1.0, pero falta validarla en la instalación nueva antes de
+en la versión 1.1, pero falta validarla en la instalación nueva antes de
 distribuir. La instalación anterior (1.6-copia) no se actualiza con la firma
 nueva.
 

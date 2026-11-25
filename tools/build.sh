@@ -22,8 +22,8 @@ echo "[1/6] compilando recursos"
 # El manifiesto manda sobre --version-name/--version-code, así que para desarrollo se
 # genera una copia con el nombre y el código de versión pedidos.
 MANIFEST=app/AndroidManifest.xml
-VERSION_NAME="${VERSION:-1.0}"
-VERSION_NUMBER="${VERSION_CODE:-12}"
+VERSION_NAME="${VERSION:-1.1}"
+VERSION_NUMBER="${VERSION_CODE:-13}"
 if [ -n "${VERSION:-}" ] || [ -n "${VERSION_CODE:-}" ]; then
   sed -e 's/android:versionName="[^"]*"/android:versionName="'"$VERSION_NAME"'"/' \
       -e 's/android:versionCode="[^"]*"/android:versionCode="'"$VERSION_NUMBER"'"/' \
@@ -41,7 +41,7 @@ echo "[2/6] enlazando recursos y manifest"
   -R build/res.zip \
   --min-sdk-version 26 --target-sdk-version 35 \
   --version-code "$VERSION_NUMBER" --version-name "$VERSION_NAME"
-# La 1.0 es la estable (versionCode 12). Para pruebas, el nombre cambia y el código no:
+# La 1.1 es la estable (versionCode 13). Para pruebas, el nombre cambia y el código no:
 #   VERSION=test82 bash tools/build.sh
 # y para subir la versión de verdad: VERSION=1.1 VERSION_CODE=13 bash tools/build.sh
 

@@ -10,6 +10,7 @@ credenciales.
 
 - Las facturas que importas: PDFs, datos del suministro, consumos, potencias,
   precios, importes e historial.
+- Las comparaciones guardadas cuando la app detecta un cambio de tarifa.
 - El perfil de tu vivienda: código postal, potencia contratada, consumo anual y
   reparto por periodos.
 - Tus placas: autoconsumo, energía vertida y producción mensual.
@@ -67,8 +68,8 @@ Los datos permanecen en el móvil hasta que los borras:
 
 La app permite crear un archivo de copia de seguridad y restaurarlo desde el
 selector de archivos del móvil. La copia incluye las facturas y sus PDFs, el
-perfil, la curva de Datadis, los meses del inversor, el PVPC y las ofertas
-manuales. No incluye el NIF ni la contraseña de Datadis, ni el token de ESIOS:
+perfil, la curva de Datadis, los meses del inversor, el PVPC, las ofertas
+manuales y las comparaciones de cambios de tarifa. No incluye el NIF ni la contraseña de Datadis, ni el token de ESIOS:
 después de restaurar hay que volver a introducirlos.
 
 El archivo lo eliges y lo guardas tú. Contiene datos personales y facturas, así

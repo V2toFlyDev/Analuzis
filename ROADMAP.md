@@ -64,7 +64,7 @@ instalaciones actuales y sin publicar claves ni datos personales.
    PVPC, Datadis, modo offline y borrado de datos. La actualización desde la
    instalación anterior (1.6-copia) con la firma antigua no es posible sin
    desinstalar; probar el recorrido de exportar, desinstalar, instalar e importar.
-9. **Versión.** 1.0 con `versionCode` 12. El nombre visible se reinicia, pero el
+9. **Versión.** 1.1 con `versionCode` 13. El nombre visible se reinicia, pero el
    código sigue siendo mayor que el 11 anterior para no cerrar futuras
    actualizaciones.
 

@@ -217,7 +217,7 @@ public class Datadis {
         // Un año de lecturas puede tardar; Datadis es lento de por sí.
         c.setReadTimeout(180000);
         c.setRequestProperty("Accept", "application/json, text/plain, */*");
-        c.setRequestProperty("User-Agent", "Analuzis/1.0 (uso personal)");
+        c.setRequestProperty("User-Agent", "Analuzis/1.1 (uso personal)");
         return c;
     }
 

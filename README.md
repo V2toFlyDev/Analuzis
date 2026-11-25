@@ -13,6 +13,9 @@ ESIOS ni a ninguna comercializadora eléctrica.
   Comprueba que la factura cuadra al céntimo antes de guardar los precios.
 - **Compara con la CNMC**: ordena las ofertas por coste anual con tu consumo,
   potencia, impuestos y excedentes.
+- **Cambios de tarifa**: al guardar una factura nueva, avisa si cambia la tarifa
+  respecto a la anterior, compara el mismo consumo con los dos precios y guarda
+  el cálculo para consultarlo después.
 - **Ofertas a mano**: crea una oferta con los precios de la web de una
   comercializadora y compárala con las demás.
 - **PVPC**: añade el PVPC real de ESIOS cruzado con tu curva horaria.
@@ -36,7 +39,7 @@ Los detalles están en [PRIVACY.md](PRIVACY.md).
 
 ## Estado
 
-- Versión estable: **1.0** (`versionCode` 12).
+- Versión estable: **1.1** (`versionCode` 13).
 - App Android nativa, Java + XML, sin Gradle para el APK de pruebas.
 - La APK de distribución **no se guarda en este repositorio**.
 - **Fase 1 completada**: repositorio público y documentación.

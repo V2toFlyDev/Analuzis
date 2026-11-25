@@ -647,6 +647,7 @@ public class Store {
                 .remove("oneSource").remove("historyOnly")
                 .remove("solarMonths").remove("datadisMonths").remove("pvpc")
                 .remove("manualOffers").remove("manualStamp")
+                .remove("tariffChanges")
                 .apply();
     }
 
@@ -924,6 +925,46 @@ public class Store {
             }
         }
         sp.edit().putString("invoices", a.toString()).apply();
+    }
+
+    // ---------- cambios de tarifa guardados ----------
+
+    /** Historial de comparaciones old/new, más reciente primero. */
+    public List<TariffChange> tariffChanges() {
+        List<TariffChange> out = new ArrayList<>();
+        String s = sp.getString("tariffChanges", "");
+        if (s == null || s.isEmpty()) return out;
+        try {
+            JSONArray a = new JSONArray(s);
+            for (int i = 0; i < a.length(); i++) {
+                TariffChange c = TariffChange.fromJson(a.optJSONObject(i));
+                if (c != null) out.add(c);
+            }
+        } catch (Exception ignored) {
+        }
+        out.sort((x, y) -> Long.compare(y.createdAt, x.createdAt));
+        return out;
+    }
+
+    /**
+     * Una factura nueva sustituye el aviso anterior de esa misma factura, no lo duplica.
+     * Así reimportar el PDF no llena el historial de copias.
+     */
+    public void addTariffChange(TariffChange change) {
+        if (change == null || change.toKey == null || change.toKey.isEmpty()) return;
+        List<TariffChange> all = tariffChanges();
+        for (int i = all.size() - 1; i >= 0; i--) {
+            if (change.toKey.equals(all.get(i).toKey)) all.remove(i);
+        }
+        all.add(change);
+        JSONArray a = new JSONArray();
+        for (TariffChange c : all) {
+            try {
+                a.put(c.toJson());
+            } catch (Exception ignored) {
+            }
+        }
+        sp.edit().putString("tariffChanges", a.toString()).apply();
     }
 
     /** Guarda en la factura más reciente los precios de energía por tramo (0 = sin tramos). */

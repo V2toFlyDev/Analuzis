@@ -61,6 +61,7 @@ public class MainActivity extends Activity {
     private TextView surplusSummary, priceSummary, historySummary, historyTitle, historyChevron;
     private TextView supplyDetails;
     private TextView monthlyLink, solarLink, datadisLink, pvpcLink, linkTramos, censoLink, backupLink;
+    private TextView tariffLink;
     private LinearLayout historyBox, historyPanel, historyToggle, billInside;
     private CheckBox cbFijo, cbAuto, cbVerde;
 
@@ -92,6 +93,7 @@ public class MainActivity extends Activity {
         linkTramos = findViewById(R.id.linkTramos);
         censoLink = findViewById(R.id.linkCenso);
         backupLink = findViewById(R.id.linkBackup);
+        tariffLink = findViewById(R.id.linkTariffChanges);
         billInside = findViewById(R.id.billInside);
         btnClear = findViewById(R.id.btnClear);
         btnHelp = findViewById(R.id.btnHelp);
@@ -154,6 +156,13 @@ public class MainActivity extends Activity {
                 + "y excedentes. Puedes importar los PDFs o meter la factura a mano; las copias se "
                 + "guardan aquí.");
 
+        Dialogs.section(this, body, "Cambios de tarifa");
+        Dialogs.note(this, body, "Cuando guardas una factura nueva que es la más reciente, "
+                + "comparo sus precios con los de la anterior. Si cambia la tarifa, te aviso y te "
+                + "enseño cuánto costaría el mismo consumo con cada una. También detecto el cambio "
+                + "a mitad de ciclo cuando la factura mezcla dos precios. El cálculo queda guardado "
+                + "en «Cambios de tarifa», al final de la pantalla principal.");
+
         Dialogs.section(this, body, "Datadis");
         Dialogs.note(this, body, "Es la curva horaria de tu distribuidora: reparto P1/P2/P3 y "
                 + "vertido a la red. Date de alta en datadis.es con tu NIF; la app pide ese NIF y "
@@ -167,10 +176,11 @@ public class MainActivity extends Activity {
 
         Dialogs.section(this, body, "Copia de seguridad");
         Dialogs.note(this, body, "Al final de la pantalla principal puedes crear un archivo con "
-                + "tus facturas y PDFs, la curva de Datadis, los meses del inversor y el PVPC. "
-                + "No incluye el NIF ni la contraseña de Datadis, ni el token de ESIOS: después "
-                + "de restaurar hay que volver a introducirlos. Restaurar sustituye los datos "
-                + "actuales y el archivo contiene datos personales; guárdalo en un sitio seguro.");
+                + "tus facturas y PDFs, la curva de Datadis, los meses del inversor, el PVPC y "
+                + "los cambios de tarifa guardados. No incluye el NIF ni la contraseña de Datadis, "
+                + "ni el token de ESIOS: después de restaurar hay que volver a introducirlos. "
+                + "Restaurar sustituye los datos actuales y el archivo contiene datos personales; "
+                + "guárdalo en un sitio seguro.");
 
         Dialogs.section(this, body, "Consejo");
         Dialogs.note(this, body, "Cuantas más facturas y meses de placas metas, mejor sale la "
@@ -216,6 +226,7 @@ public class MainActivity extends Activity {
         linkTramos.setOnClickListener(v -> showTramos());
         solarLink.setOnClickListener(v -> showSolarMonths());
         censoLink.setOnClickListener(v -> CensoDialog.show(this, store));
+        tariffLink.setOnClickListener(v -> showTariffChanges());
         backupLink.setOnClickListener(v -> startActivityForResult(
                 new Intent(this, BackupActivity.class), REQ_BACKUP));
 
@@ -343,6 +354,11 @@ public class MainActivity extends Activity {
         cbVerde.setChecked(store.filterGreen());
 
         renderHistory();
+        List<TariffChange> changes = store.tariffChanges();
+        tariffLink.setVisibility(changes.isEmpty() ? View.GONE : View.VISIBLE);
+        if (!changes.isEmpty()) {
+            tariffLink.setText("Cambios de tarifa · " + changes.size() + " ›");
+        }
         monthlyLink.setVisibility(store.invoices().isEmpty() && solar.isEmpty() ? View.GONE : View.VISIBLE);
         binding = false;
     }
@@ -531,6 +547,132 @@ public class MainActivity extends Activity {
         del.setOnClickListener(v -> confirmDelete(inv));
         row.addView(del);
         return row;
+    }
+
+    /** Historial de cambios guardados; se puede abrir en cualquier momento. */
+    private void showTariffChanges() {
+        List<TariffChange> all = store.tariffChanges();
+        if (all.isEmpty()) {
+            toast("Aún no hay cambios de tarifa guardados.");
+            return;
+        }
+
+        LinearLayout body = Dialogs.body(this);
+        Dialogs.note(this, body, "Comparaciones guardadas al importar una factura nueva. "
+                + "El cálculo usa el mismo consumo para las dos tarifas y deja fuera los excedentes.");
+
+        for (int i = 0; i < all.size(); i++) {
+            final TariffChange c = all.get(i);
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.VERTICAL);
+            row.setPadding(0, dp(12), 0, dp(12));
+            row.setBackgroundResource(android.R.drawable.list_selector_background);
+            row.setOnClickListener(v -> showTariffChange(c, false));
+
+            TextView title = new TextView(this);
+            title.setText("Factura del " + shortDate(c.toFrom) + " → " + shortDate(c.toTo));
+            title.setTextColor(getColor(R.color.text));
+            title.setTextSize(14);
+            title.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+            row.addView(title);
+
+            TextView detail = new TextView(this);
+            detail.setText(tariffPrices(c, true) + " → " + tariffPrices(c, false)
+                    + "\n" + signedEur(c.delta) + " en esta factura · "
+                    + signedEur(c.annualDelta) + " al año");
+            detail.setTextColor(deltaColor(c.delta));
+            detail.setTextSize(12);
+            detail.setLineSpacing(dp(3), 1f);
+            row.addView(detail);
+
+            body.addView(row);
+            if (i < all.size() - 1) body.addView(Dialogs.divider(this));
+        }
+
+        AlertDialog dlg = new AlertDialog.Builder(this)
+                .setTitle("Cambios de tarifa")
+                .setView(Dialogs.scroller(this, body, 480))
+                .setNegativeButton("Cerrar", null)
+                .show();
+        Dialogs.width(dlg);
+    }
+
+    /** Detalle de una comparación; el mismo diálogo sirve para el aviso y para el histórico. */
+    private void showTariffChange(final TariffChange c, boolean detected) {
+        LinearLayout body = Dialogs.body(this);
+        if (detected) {
+            body.addView(Dialogs.banner(this, "He detectado un cambio de tarifa al guardar esta factura.",
+                    R.drawable.bg_banner, getColor(R.color.warn)));
+        }
+
+        Dialogs.section(this, body, "Factura nueva");
+        Dialogs.row(this, body, "Periodo", shortDate(c.toFrom) + " → " + shortDate(c.toTo));
+        Dialogs.row(this, body, "Consumo", Fmt.kwh(c.kwh) + " · " + c.days + " días");
+
+        Dialogs.section(this, body, "Tarifas");
+        Dialogs.wideRow(this, body, "Antes", "Factura del " + shortDate(c.fromFrom)
+                + " → " + shortDate(c.fromTo) + " · " + tariffPrices(c, true),
+                getColor(R.color.muted));
+        Dialogs.wideRow(this, body, "Ahora", tariffPrices(c, false), getColor(R.color.accent));
+        if (!c.reason.isEmpty()) Dialogs.row(this, body, "Cambia", c.reason);
+        if (!c.supplierBefore.isEmpty() || !c.supplierAfter.isEmpty()) {
+            String a = c.supplierBefore.isEmpty() ? "—" : c.supplierBefore;
+            String b = c.supplierAfter.isEmpty() ? "—" : c.supplierAfter;
+            Dialogs.row(this, body, "Comercializadora", a + " → " + b);
+        }
+
+        Dialogs.section(this, body, "Comparación");
+        Dialogs.note(this, body, "Mismo consumo, potencia e impuestos de la factura nueva. "
+                + "Los excedentes quedan fuera para comparar solo el efecto de la tarifa.");
+        Dialogs.row(this, body, "Con la tarifa anterior", Fmt.eur2(c.oldTotal));
+        Dialogs.row(this, body, "Con la tarifa nueva", Fmt.eur2(c.newTotal));
+        Dialogs.row(this, body, "Diferencia en la factura", signedEur(c.delta), deltaColor(c.delta));
+        Dialogs.row(this, body, "Diferencia al año", signedEur(c.annualDelta), deltaColor(c.delta));
+        if (c.actual > 0) {
+            Dialogs.row(this, body, "Factura real", Fmt.eur2(c.actual));
+            Dialogs.note(this, body, "La factura real puede incluir excedentes; la comparación de "
+                    + "arriba no los descuenta.");
+        }
+        if (c.midCycle) {
+            Dialogs.note(this, body, "Esta factura mezcla los dos precios: el cambio se produjo "
+                    + "a mitad de ciclo. El cálculo compara todo su consumo con cada tarifa, "
+                    + "no reparte los kWh entre los dos precios.");
+        }
+
+        AlertDialog.Builder d = new AlertDialog.Builder(this)
+                .setTitle(detected ? "Cambio de tarifa detectado" : "Cambio de tarifa")
+                .setView(Dialogs.scroller(this, body, 480));
+        if (detected) {
+            d.setPositiveButton("Ver histórico", (x, w) -> showTariffChanges());
+            d.setNegativeButton("Cerrar", null);
+        } else {
+            d.setPositiveButton("Cerrar", null);
+        }
+        AlertDialog dlg = d.show();
+        Dialogs.width(dlg);
+    }
+
+    private String tariffPrices(TariffChange c, boolean old) {
+        double p1 = old ? c.oldPe1 : c.newPe1;
+        double p2 = old ? c.oldPe2 : c.newPe2;
+        double p3 = old ? c.oldPe3 : c.newPe3;
+        if (p1 > 0 && p2 > 0 && p3 > 0) {
+            return "P1 " + Fmt.dec(p1, 4) + " · P2 " + Fmt.dec(p2, 4)
+                    + " · P3 " + Fmt.dec(p3, 4) + " €/kWh";
+        }
+        double p = old ? c.oldPe : c.newPe;
+        return p > 0 ? Fmt.dec(p, 4) + " €/kWh" : "sin precio";
+    }
+
+    private String signedEur(double v) {
+        if (Math.abs(v) < 0.005) return "0,00 €";
+        return (v > 0 ? "+" : "−") + Fmt.eur2(Math.abs(v));
+    }
+
+    private int deltaColor(double v) {
+        if (v > 0.005) return getColor(R.color.warn);
+        if (v < -0.005) return getColor(R.color.accent);
+        return getColor(R.color.muted);
     }
 
     private void confirmDelete(final Invoice inv) {
@@ -1252,6 +1394,7 @@ public class MainActivity extends Activity {
     }
 
     private void saveImport(List<Invoice> found, List<Invoice> clashes) {
+        List<Invoice> before = store.invoices();
         // Si el PDF no trae precios, no se pierden los que ya tenías: se heredan.
         BillData cur = store.load();
         for (Invoice n : found) {
@@ -1275,11 +1418,13 @@ public class MainActivity extends Activity {
             if (bytes != null) Pdfs.save(this, n.pdf, bytes);
         }
         store.addInvoices(found);
+        TariffChange change = recordTariffChange(found, before, clashes);
         if (!clashes.isEmpty()) store.setHistoryOpen(true);
         render();
         toast(clashes.isEmpty()
                 ? "Guardadas " + found.size() + (found.size() == 1 ? " factura" : " facturas")
                 : "Sustituidas " + clashes.size() + " · guardadas " + found.size());
+        if (change != null) showTariffChange(change, true);
     }
 
     private static boolean same(List<Invoice> l, Invoice x) {
@@ -1379,6 +1524,7 @@ public class MainActivity extends Activity {
     }
 
     private void commitBill(BillData bd, Invoice inv, List<Invoice> clashes) {
+        List<Invoice> before = store.invoices();
         store.save(bd);
         if (inv.pe <= 0) {
             BillData cur = store.load();
@@ -1401,14 +1547,61 @@ public class MainActivity extends Activity {
         List<Invoice> one = new ArrayList<>();
         one.add(inv);
         store.addInvoices(one);
+        TariffChange change = recordTariffChange(one, before, clashes);
         render();
         toast(clashes.isEmpty() ? "Factura guardada en el historial" : "Factura sustituida");
+        if (change != null) showTariffChange(change, true);
     }
 
     private static List<Invoice> overlapsFor(Invoice n, List<Invoice> saved) {
         List<Invoice> out = new ArrayList<>();
         for (Invoice s : saved) if (overlaps(n, s) && !same(out, s)) out.add(s);
         return out;
+    }
+
+    /**
+     * Busca la factura anterior a la recién guardada y, si la nueva es la más reciente
+     * y cambia la tarifa, guarda la comparación. Si se sustituye una factura, la anterior
+     * es la que queda antes de ella, no la sustituida. No avisa al importar facturas viejas.
+     */
+    private TariffChange recordTariffChange(List<Invoice> added, List<Invoice> before,
+                                            List<Invoice> clashes) {
+        if (added == null || added.isEmpty() || before == null || before.isEmpty()) return null;
+        Invoice next = Invoice.latest(added);
+        if (next == null || next.from.isEmpty() || next.to.isEmpty()) return null;
+
+        // La anterior puede estar ya guardada o ser otra de las facturas importadas
+        // en el mismo lote (por ejemplo, febrero y marzo de golpe).
+        List<Invoice> previous = new ArrayList<>();
+        for (Invoice old : before) {
+            if (old == null || same(clashes, old) || old.key().equals(next.key())) continue;
+            if (!same(previous, old)) previous.add(old);
+        }
+        for (Invoice addedInvoice : added) {
+            if (addedInvoice == null || addedInvoice.key().equals(next.key())) continue;
+            if (!same(previous, addedInvoice)) previous.add(addedInvoice);
+        }
+        if (previous.isEmpty()) return null;
+        previous.sort(Invoice.byDate());
+        Invoice latestBefore = previous.get(0);
+
+        // Solo interesa la factura que pasa a ser la más reciente. Importar una
+        // factura antigua no debe disparar avisos de cambios ya pasados.
+        if (next.to.compareTo(latestBefore.to) < 0) return null;
+        if (next.to.equals(latestBefore.to)) return null;
+
+        Invoice prev = null;
+        for (Invoice old : previous) {
+            if (old.to.compareTo(next.from) <= 0) {
+                prev = old;
+                break;
+            }
+        }
+        if (prev == null) prev = latestBefore;
+
+        TariffChange change = TariffChange.between(prev, next);
+        if (change != null) store.addTariffChange(change);
+        return change;
     }
 
     /** Al leer una factura nueva conservamos lo que no viene en el QR (placas, excedentes, batería). */

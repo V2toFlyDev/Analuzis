@@ -70,7 +70,7 @@ public class CnmcClient {
             c.setConnectTimeout(15000);
             c.setReadTimeout(30000);
             c.setRequestProperty("Accept", "application/json");
-            c.setRequestProperty("User-Agent", "Analuzis/1.0 (uso personal)");
+            c.setRequestProperty("User-Agent", "Analuzis/1.1 (uso personal)");
             int code = c.getResponseCode();
             if (code != 200) {
                 // El error viene en JSON (title/detail), pero puede ser HTML o vacío.
@@ -239,7 +239,7 @@ public class CnmcClient {
             c.setConnectTimeout(15000);
             c.setReadTimeout(20000);
             c.setRequestProperty("Accept", "application/json");
-            c.setRequestProperty("User-Agent", "Analuzis/1.0 (uso personal)");
+            c.setRequestProperty("User-Agent", "Analuzis/1.1 (uso personal)");
             if (c.getResponseCode() != 200) return null;
             JSONObject root = new JSONObject(read(c.getInputStream()));
             JSONObject car = root.optJSONObject("caracteristicas");
@@ -301,7 +301,7 @@ public class CnmcClient {
             c.setConnectTimeout(15000);
             c.setReadTimeout(30000);
             c.setRequestProperty("Accept", "application/json");
-            c.setRequestProperty("User-Agent", "Analuzis/1.0 (uso personal)");
+            c.setRequestProperty("User-Agent", "Analuzis/1.1 (uso personal)");
             if (c.getResponseCode() != 200) return 0;
             JSONObject root = new JSONObject(read(c.getInputStream()));
             JSONArray arr = root.optJSONArray("resultadoComparador");

@@ -51,7 +51,7 @@ final class Censo {
             c.setConnectTimeout(15000);
             c.setReadTimeout(25000);
             c.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (Linux; Android 14) Analuzis/1.0 (uso personal)");
+                    "Mozilla/5.0 (Linux; Android 14) Analuzis/1.1 (uso personal)");
             c.setRequestProperty("Accept", "text/html,application/xhtml+xml");
             if (c.getResponseCode() != 200) return null;
             return parse(read(c.getInputStream()));

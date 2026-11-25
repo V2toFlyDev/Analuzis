@@ -40,7 +40,7 @@ final class Web {
             c.setInstanceFollowRedirects(true);
             // Sin un agente de navegador, muchas webs devuelven 403 a lo primero que no conocen.
             c.setRequestProperty("User-Agent",
-                    "Mozilla/5.0 (Linux; Android 14) Analuzis/1.0 (uso personal)");
+                    "Mozilla/5.0 (Linux; Android 14) Analuzis/1.1 (uso personal)");
             c.setRequestProperty("Accept", "text/html,application/xhtml+xml");
             c.setRequestProperty("Accept-Language", "es-ES,es;q=0.9");
             if (c.getResponseCode() != 200) return null;
