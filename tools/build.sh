@@ -12,8 +12,8 @@ if [ ! -f "$PLATFORM" ]; then
   exit 1
 fi
 
-rm -rf build out
-mkdir -p build/gen build/classes build/dex out libs
+rm -rf build
+mkdir -p build/gen build/classes build/dex dist libs
 cp "$PLATFORM" libs/android.jar
 
 echo "[1/6] compilando recursos"
@@ -24,6 +24,8 @@ echo "[1/6] compilando recursos"
 MANIFEST=app/AndroidManifest.xml
 VERSION_NAME="${VERSION:-1.1}"
 VERSION_NUMBER="${VERSION_CODE:-13}"
+DIST=dist
+APK="$DIST/Analuzis-$VERSION_NAME-$VERSION_NUMBER.apk"
 if [ -n "${VERSION:-}" ] || [ -n "${VERSION_CODE:-}" ]; then
   sed -e 's/android:versionName="[^"]*"/android:versionName="'"$VERSION_NAME"'"/' \
       -e 's/android:versionCode="[^"]*"/android:versionCode="'"$VERSION_NUMBER"'"/' \
@@ -89,8 +91,9 @@ fi
 java -jar "$BT/lib/apksigner.jar" sign \
   --ks "$KS" --ks-pass "$KS_PASS" --key-pass "$KS_PASS" \
   --ks-key-alias "$ALIAS" \
-  --out out/Analuzis.apk build/aligned.apk
+  --out "$APK" build/aligned.apk
 
-java -jar "$BT/lib/apksigner.jar" verify --print-certs out/Analuzis.apk | head -4
-ls -lh out/Analuzis.apk
+java -jar "$BT/lib/apksigner.jar" verify --print-certs "$APK" | head -4
+ls -lh "$APK"
+echo "APK: $APK"
 echo "OK"

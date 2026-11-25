@@ -14,7 +14,7 @@ libs/android.jar
 private/
 
 # APK de distribución local: no se publica en el repositorio
-dist/*.apk
+dist/
 
 # Adjuntos de la conversación y metadatos del entorno
 .cloud-attachments/

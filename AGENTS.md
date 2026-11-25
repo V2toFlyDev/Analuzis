@@ -13,7 +13,8 @@ ningún usuario: los ejemplos y perfiles que aparecen son ficticios.
 
 - Versión estable: **1.1** (`versionCode` 13).
 - La app compila con `bash tools/build.sh`; el APK de distribución no se guarda en
-  el repositorio (se genera en `out/` y se conserva solo en local).
+  el repositorio (se genera en `dist/Analuzis-<versión>-<versionCode>.apk` y se
+  conserva solo en local).
 - La clave de firma (`tools/release.jks`) y su contraseña (`tools/.firma-pass`) no
   se versionan nunca.
 - Fase 1 completada. El plan de Fase 2 (Google Play) y Fase 3 (PWA iOS) está en
@@ -39,7 +40,8 @@ cd Analuzis
 bash tools/build.sh
 ```
 
-- `bash tools/build.sh` genera la versión estable indicada en el manifiesto.
+- `bash tools/build.sh` genera la versión estable indicada en el manifiesto en
+  `dist/Analuzis-<versión>-<versionCode>.apk` (por ejemplo, `dist/Analuzis-1.1-13.apk`).
 - `VERSION=testN bash tools/build.sh` genera una versión de prueba con otro
   `versionName` y el mismo `versionCode`.
 - Para subir versión: `VERSION=1.1 VERSION_CODE=13 bash tools/build.sh`.
@@ -48,7 +50,7 @@ bash tools/build.sh
   crea uno nuevo con `CN=Analuzis, O=Analuzis, C=ES`; eso cambia la firma y obliga
   a desinstalar la app instalada.
 - Instalación por ADB:
-  `adb install -r out/Analuzis.apk`.
+  `adb install -r dist/Analuzis-<versión>-<versionCode>.apk`.
 - Comprobar versión:
   `adb shell dumpsys package com.analizis.app | grep -i versionName`.
 

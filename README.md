@@ -41,7 +41,7 @@ Los detalles están en [PRIVACY.md](PRIVACY.md).
 
 - Versión estable: **1.1** (`versionCode` 13).
 - App Android nativa, Java + XML, sin Gradle para el APK de pruebas.
-- La APK de distribución **no se guarda en este repositorio**.
+- La APK de distribución se genera en `dist/Analuzis-<versión>-<versionCode>.apk` y **no se guarda en el repositorio**.
 - **Fase 1 completada**: repositorio público y documentación.
 - **Fase 2**: preparación de Google Play; todavía no publicada.
 - **Fase 3**: PWA para iOS, posterior a Play.
@@ -59,7 +59,7 @@ Necesitas JDK, Android SDK y las `build-tools` que usa el proyecto.
 bash tools/build.sh
 ```
 
-El APK se genera en `out/Analuzis.apk`. Para pruebas:
+El APK se genera en `dist/Analuzis-1.1-13.apk`. El nombre incluye la versión y el `versionCode`. Para pruebas:
 
 ```bash
 VERSION=testN bash tools/build.sh
