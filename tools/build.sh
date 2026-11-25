@@ -59,7 +59,7 @@ python tools/adddex.py build/base.apk build/dex/classes.dex build/unsigned.apk
 
 echo "[6/6] firmando"
 KS=tools/release.jks
-ALIAS=david-dorado
+ALIAS=V2toFlyDev
 # La contraseña NO está en este script: se toma de un fichero local ignorado por git
 # (tools/.firma-pass) o de la variable de entorno ANALUZIS_STORE_PASS.
 PASSFILE=tools/.firma-pass
@@ -85,6 +85,7 @@ fi
 
 java -jar "$BT/lib/apksigner.jar" sign \
   --ks "$KS" --ks-pass "$KS_PASS" --key-pass "$KS_PASS" \
+  --ks-key-alias "$ALIAS" \
   --out out/Analuzis.apk build/aligned.apk
 
 java -jar "$BT/lib/apksigner.jar" verify --print-certs out/Analuzis.apk | head -4

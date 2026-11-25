@@ -38,8 +38,13 @@ Los detalles están en [PRIVACY.md](PRIVACY.md).
 - Versión estable: **1.6** (`versionCode` 11).
 - App Android nativa, Java + XML, sin Gradle para el APK de pruebas.
 - La APK de distribución **no se guarda en este repositorio**.
-- Google Play y una posible PWA para iOS están en estudio; todavía no hay
-  distribución en tiendas.
+- **Fase 1 completada**: repositorio público y documentación.
+- **Fase 2**: preparación de Google Play; todavía no publicada.
+- **Fase 3**: PWA para iOS, posterior a Play.
+- Las instalaciones de la 1.6 usan una firma anterior; las compilaciones nuevas
+  usan una firma distinta y no las actualizan sin exportar/importar y desinstalar.
+
+El detalle de las fases está en [ROADMAP.md](ROADMAP.md).
 
 ## Compilar
 

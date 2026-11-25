@@ -16,10 +16,13 @@ ningún usuario: los ejemplos y perfiles que aparecen son ficticios.
   el repositorio (se genera en `out/` y se conserva solo en local).
 - La clave de firma (`tools/release.jks`) y su contraseña (`tools/.firma-pass`) no
   se versionan nunca.
-- Pendiente para publicar en Google Play: AAB, `targetSdk 36`, política de
-  privacidad enlazada, Data safety, modo demo para revisores y prueba cerrada.
-- Pendiente para una posible PWA: decidir si será un cliente acompañante (importa
-  datos exportados desde Android) o completo (necesita proxy para la CNMC).
+- Fase 1 completada. El plan de Fase 2 (Google Play) y Fase 3 (PWA iOS) está en
+  [ROADMAP.md](ROADMAP.md).
+- La 1.6 actual no está preparada para Play: genera APK, usa `targetSdk 35`,
+  mantiene `allowBackup=true` y no cifra las credenciales.
+- La firma actual usa el alias `V2toFlyDev` y el certificado
+  `CN=Analuzis, O=Analuzis, C=ES`. Las instalaciones firmadas con la clave anterior
+  no se actualizan con esta firma: hace falta exportar/importar y desinstalar.
 
 ## Cómo compilar
 
@@ -148,11 +151,9 @@ condiciones de uso de esas APIs.
 - Las facturas, PDFs, precios, curvas y ofertas manuales se guardan en el móvil.
 - No hay analítica, publicidad ni servidor propio.
 - El NIF/contraseña de Datadis y el token de ESIOS se guardan en las preferencias
-  privadas de la app. Para una distribución pública conviene cifrarlos con Android
-  Keystore.
+  privadas de la app. Para Play (Fase 2) hay que cifrarlos con Android Keystore.
 - `android:allowBackup="true"` permite que Android haga copia de seguridad de los
-  datos; antes de publicar en Play hay que desactivarlo o excluir PDFs y
-  credenciales.
+  datos; en Fase 2 hay que desactivarlo o excluir PDFs y credenciales.
 - La app pide permiso de cámara solo para leer el QR de la factura.
 - Para borrar los datos: borrar las facturas desde la app, «Borrar todo» o
   desinstalar. Los PDFs se guardan en `filesDir/pdfs` y se borran con la factura.
@@ -171,9 +172,11 @@ condiciones de uso de esas APIs.
   significa «no lo ve», no «no hay».
 - **PDFs**: el lector propio extrae texto e imágenes, pero no es un visor general.
   Si un PDF no se lee, se puede meter la factura a mano.
-- **Firma**: cambiar de keystore cambia la identidad de la app y Android no permite
-  actualizar una instalación con otra firma. Antes de cambiarla hay que añadir
-  exportar/importar datos.
+- **Firma**: la clave actual (alias `V2toFlyDev`, certificado
+  `CN=Analuzis`) no actualiza instalaciones firmadas con la clave anterior. Antes
+  de sustituir una instalación hay que exportar/importar datos y desinstalar.
+  Cambiar solo el alias no cambia la identidad; cambiar la clave o el certificado
+  sí.
 - **Versión de Android**: `targetSdk 35` ya no vale para nuevas apps en Google
   Play desde el 31/08/2026; hay que subir a 36 y probar edge-to-edge.
 
@@ -197,7 +200,10 @@ El repositorio público no incluye APK, PDFs, keystore, contraseñas ni datos de
 usuarios. `private/` está ignorado y contiene las copias de trabajo. Para Play
 Store hacen falta, además: AAB, `targetSdk 36`, Play App Signing, política de
 privacidad pública, Data safety, `allowBackup` controlado, credenciales cifradas,
-modo demo para revisores y la prueba cerrada de 12 testers durante 14 días.
+modo demo para revisores y la prueba cerrada de 12 testers durante 14 días. Ver
+[ROADMAP.md](ROADMAP.md). La clave nueva ya existe; la exportación/importación
+sigue pendiente antes de distribuir, y la 1.6 instalada no se actualiza con la
+firma nueva.
 
 ## Licencia
 
