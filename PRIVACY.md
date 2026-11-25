@@ -83,7 +83,7 @@ actualización figura al principio.
 
 Para dudas o para solicitar el borrado de datos, abre una incidencia en el
 repositorio del proyecto:
-<https://github.com/Cryptonito/Analuzis/issues>.
+<https://github.com/V2toFlyDev/Analuzis/issues>.
 
 No incluyas en una incidencia datos personales, facturas, NIF, CUPS ni
 credenciales.
