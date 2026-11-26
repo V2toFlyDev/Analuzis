@@ -111,6 +111,8 @@ public class Store {
         b.peNow = last.peNow;
         b.pp1 = last.pp1;
         b.pp2 = last.pp2;
+        b.pp1Now = last.pp1Now;
+        b.pp2Now = last.pp2Now;
         b.ps = last.ps;
         b.bono = last.bono;
         b.rent = last.rent;
@@ -934,15 +936,21 @@ public class Store {
         List<TariffChange> out = new ArrayList<>();
         String s = sp.getString("tariffChanges", "");
         if (s == null || s.isEmpty()) return out;
+        boolean cleaned = false;
         try {
             JSONArray a = new JSONArray(s);
             for (int i = 0; i < a.length(); i++) {
                 TariffChange c = TariffChange.fromJson(a.optJSONObject(i));
-                if (c != null) out.add(c);
+                if (c == null) continue;
+                // Versiones anteriores podían guardar como cambio una diferencia de
+                // potencia de millonésimas producida por el redondeo de la factura.
+                if (c.isMeaningful()) out.add(c);
+                else cleaned = true;
             }
         } catch (Exception ignored) {
         }
         out.sort((x, y) -> Long.compare(y.createdAt, x.createdAt));
+        if (cleaned) saveTariffChanges(out);
         return out;
     }
 
@@ -951,12 +959,27 @@ public class Store {
      * Así reimportar el PDF no llena el historial de copias.
      */
     public void addTariffChange(TariffChange change) {
-        if (change == null || change.toKey == null || change.toKey.isEmpty()) return;
+        if (change == null) return;
+        List<TariffChange> one = new ArrayList<>();
+        one.add(change);
+        addTariffChanges(one);
+    }
+
+    /** Guarda de una vez los cambios detectados en un bloque, sin duplicar periodos. */
+    public void addTariffChanges(List<TariffChange> changes) {
+        if (changes == null || changes.isEmpty()) return;
         List<TariffChange> all = tariffChanges();
-        for (int i = all.size() - 1; i >= 0; i--) {
-            if (change.toKey.equals(all.get(i).toKey)) all.remove(i);
+        for (TariffChange change : changes) {
+            if (change == null || change.toKey == null || change.toKey.isEmpty()) continue;
+            for (int i = all.size() - 1; i >= 0; i--) {
+                if (change.toKey.equals(all.get(i).toKey)) all.remove(i);
+            }
+            all.add(change);
         }
-        all.add(change);
+        saveTariffChanges(all);
+    }
+
+    private void saveTariffChanges(List<TariffChange> all) {
         JSONArray a = new JSONArray();
         for (TariffChange c : all) {
             try {
@@ -997,6 +1020,8 @@ public class Store {
         if (n.pe <= 0) n.pe = pe;
         n.pp1 = pp1;
         n.pp2 = pp2;
+        n.pp1Now = pp1;
+        n.pp2Now = pp2;
         n.ps = ps;
         n.bono = bono;
         n.rent = rent;

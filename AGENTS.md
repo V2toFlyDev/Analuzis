@@ -28,7 +28,9 @@ ningún usuario: los ejemplos y perfiles que aparecen son ficticios.
   incluye preferencias, facturas, PDFs, curva de Datadis, meses del inversor y
   PVPC; excluye NIF, contraseña de Datadis y token de ESIOS.
 - La detección de cambios de tarifa guarda sus comparaciones en
-  `tariffChanges` (preferencias) y las muestra en «Cambios de tarifa».
+  `tariffChanges` (preferencias) y las muestra en «Cambios de tarifa». Al importar
+  un bloque compara cada factura nueva con la anterior por fecha, no solo la más
+  reciente.
 
 ## Cómo compilar
 
@@ -93,6 +95,9 @@ recorren carpetas del móvil ni del PC desde la app.
 - Precios de energía por tramo (`pe1`/`pe2`/`pe3`): si falta un tramo, se usa el
   precio único. `pe` es el precio efectivo que reproduce la factura; `peNow` es el
   vigente hoy. El cuadre usa `pe`; el reprecio anual usa `peNow` si existe.
+- Potencia (`pp1`/`pp2`): el efectivo reproduce las facturas con el mes partido;
+  `pp1Now`/`pp2Now` son el precio de la última línea y se usan para comparar
+  tarifas y repreciar el año.
 - `energyCostYear()` y `energyCostBill()` son los únicos sitios donde se cruzan
   kWh y precios.
 - El excedente anual se calcula con el precio de la última factura por los kWh

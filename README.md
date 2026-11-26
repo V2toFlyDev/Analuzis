@@ -13,9 +13,9 @@ ESIOS ni a ninguna comercializadora eléctrica.
   Comprueba que la factura cuadra al céntimo antes de guardar los precios.
 - **Compara con la CNMC**: ordena las ofertas por coste anual con tu consumo,
   potencia, impuestos y excedentes.
-- **Cambios de tarifa**: al guardar una factura nueva, avisa si cambia la tarifa
-  respecto a la anterior, compara el mismo consumo con los dos precios y guarda
-  el cálculo para consultarlo después.
+- **Cambios de tarifa**: al guardar una factura nueva o un bloque, compara cada
+  factura con la anterior, avisa si cambia la tarifa, compara el mismo consumo con
+  los dos precios y guarda el cálculo para consultarlo después.
 - **Ofertas a mano**: crea una oferta con los precios de la web de una
   comercializadora y compárala con las demás.
 - **PVPC**: añade el PVPC real de ESIOS cruzado con tu curva horaria.

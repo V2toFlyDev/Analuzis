@@ -3,6 +3,7 @@ package com.analizis.app;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,6 +16,13 @@ import java.util.List;
  * los impuestos de la factura nueva.
  */
 public class TariffChange {
+
+    // La factura redondea cada importe a céntimos. En potencia, recalcular el precio
+    // desde ese importe puede moverlo unas millonésimas según los días del mes; eso no
+    // es un cambio de tarifa. La energía y los excedentes llevan su propia tolerancia.
+    private static final double ENERGY_TOLERANCE = 0.00005;
+    private static final double POWER_TOLERANCE = 0.0001;
+    private static final double SURPLUS_TOLERANCE = 0.0001;
 
     public String fromKey = "";
     public String toKey = "";
@@ -74,10 +82,10 @@ public class TariffChange {
         c.newPe1 = after.pe1;
         c.newPe2 = after.pe2;
         c.newPe3 = after.pe3;
-        c.oldPp1 = before.pp1;
-        c.oldPp2 = before.pp2;
-        c.newPp1 = after.pp1;
-        c.newPp2 = after.pp2;
+        c.oldPp1 = currentPower(before, 1);
+        c.oldPp2 = currentPower(before, 2);
+        c.newPp1 = currentPower(after, 1);
+        c.newPp2 = currentPower(after, 2);
         c.oldPs = before.ps;
         c.newPs = after.ps;
 
@@ -109,8 +117,8 @@ public class TariffChange {
         d.pe3 = tramos ? tariff.pe3 : 0;
         d.pe = tramos ? tariff.pe : currentEnergy(tariff);
         d.peNow = tariff.peNow;
-        d.pp1 = tariff.pp1;
-        d.pp2 = tariff.pp2;
+        d.pp1 = currentPower(tariff, 1);
+        d.pp2 = currentPower(tariff, 2);
         d.ps = tariff.ps;
         d.bono = tariff.bono;
         d.rent = tariff.rent;
@@ -127,25 +135,55 @@ public class TariffChange {
             out.add("comercializadora");
         }
         if (energyChanged(before, after)) out.add("energía");
-        if (powerChanged(before.pp1, after.pp1)
-                || powerChanged(before.pp2, after.pp2)) out.add("potencia");
+        if (powerChanged(currentPower(before, 1), currentPower(after, 1))
+                || powerChanged(currentPower(before, 2), currentPower(after, 2))) out.add("potencia");
         if (bothPositive(before.ps, after.ps)
-                && Math.abs(before.ps - after.ps) > 0.0001) out.add("excedentes");
+                && Math.abs(before.ps - after.ps) > SURPLUS_TOLERANCE) out.add("excedentes");
         return join(out);
     }
 
     private static boolean energyChanged(Invoice a, Invoice b) {
         if (hasTramos(a) && hasTramos(b)) {
-            return Math.abs(a.pe1 - b.pe1) > 0.00005
-                    || Math.abs(a.pe2 - b.pe2) > 0.00005
-                    || Math.abs(a.pe3 - b.pe3) > 0.00005;
+            return Math.abs(a.pe1 - b.pe1) > ENERGY_TOLERANCE
+                    || Math.abs(a.pe2 - b.pe2) > ENERGY_TOLERANCE
+                    || Math.abs(a.pe3 - b.pe3) > ENERGY_TOLERANCE;
         }
         return bothPositive(currentEnergy(a), currentEnergy(b))
-                && Math.abs(currentEnergy(a) - currentEnergy(b)) > 0.00005;
+                && Math.abs(currentEnergy(a) - currentEnergy(b)) > ENERGY_TOLERANCE;
     }
 
     private static boolean powerChanged(double a, double b) {
-        return bothPositive(a, b) && Math.abs(a - b) > 0.000001;
+        return bothPositive(a, b) && Math.abs(a - b) > POWER_TOLERANCE;
+    }
+
+    /**
+     * ¿Queda algún cambio real en esta comparación? Sirve para descartar avisos
+     * guardados por versiones anteriores que confundían el redondeo de la potencia
+     * con un cambio de tarifa. Los precios reales se comparan con las mismas
+     * tolerancias que usa la detección.
+     */
+    public boolean isMeaningful() {
+        if (both(supplierBefore, supplierAfter)
+                && !supplierBefore.equalsIgnoreCase(supplierAfter)) {
+            return true;
+        }
+
+        boolean oldTramos = oldPe1 > 0 && oldPe2 > 0 && oldPe3 > 0;
+        boolean newTramos = newPe1 > 0 && newPe2 > 0 && newPe3 > 0;
+        if (oldTramos && newTramos) {
+            if (Math.abs(oldPe1 - newPe1) > ENERGY_TOLERANCE
+                    || Math.abs(oldPe2 - newPe2) > ENERGY_TOLERANCE
+                    || Math.abs(oldPe3 - newPe3) > ENERGY_TOLERANCE) {
+                return true;
+            }
+        } else if (bothPositive(oldPe, newPe)
+                && Math.abs(oldPe - newPe) > ENERGY_TOLERANCE) {
+            return true;
+        }
+
+        if (powerChanged(oldPp1, newPp1) || powerChanged(oldPp2, newPp2)) return true;
+        return bothPositive(oldPs, newPs)
+                && Math.abs(oldPs - newPs) > SURPLUS_TOLERANCE;
     }
 
     private static boolean bothPositive(double a, double b) {
@@ -162,6 +200,77 @@ public class TariffChange {
 
     private static double currentEnergy(Invoice i) {
         return i.peNow > 0 ? i.peNow : i.pe;
+    }
+
+    /** Precio de potencia vigente; si no se leyó aparte, el efectivo de la factura. */
+    private static double currentPower(Invoice i, int which) {
+        if (which == 1) return i.pp1Now > 0 ? i.pp1Now : i.pp1;
+        return i.pp2Now > 0 ? i.pp2Now : i.pp2;
+    }
+
+    /**
+     * Comparaciones que genera un bloque de facturas nuevas: cada una se mide con la
+     * anterior por fecha, aunque no sea la más reciente. Así al importar un histórico
+     * aparecen también los cambios antiguos. `replaced` son las facturas que se
+     * sustituyen y no deben servir como versión anterior.
+     */
+    public static List<TariffChange> detect(List<Invoice> added, List<Invoice> before,
+                                             List<Invoice> replaced) {
+        List<TariffChange> out = new ArrayList<>();
+        if (added == null || added.isEmpty()) return out;
+
+        List<Invoice> pool = new ArrayList<>();
+        if (before != null) {
+            for (Invoice old : before) {
+                if (old == null || sameKey(replaced, old)) continue;
+                addUnique(pool, old);
+            }
+        }
+        for (Invoice invoice : added) {
+            if (invoice != null) addUnique(pool, invoice);
+        }
+        pool.sort(Invoice.byDate());
+
+        List<Invoice> candidates = new ArrayList<>();
+        for (Invoice invoice : added) {
+            if (invoice == null || invoice.from == null || invoice.from.isEmpty()
+                    || invoice.to == null || invoice.to.isEmpty()) continue;
+            addUnique(candidates, invoice);
+        }
+        candidates.sort(Invoice.byDate());
+        Collections.reverse(candidates);
+
+        for (Invoice next : candidates) {
+            Invoice prev = null;
+            for (Invoice old : pool) {
+                if (old == null || old.key().equals(next.key())) continue;
+                if (old.from == null || old.from.isEmpty()
+                        || old.to == null || old.to.isEmpty()) continue;
+                if (old.to.compareTo(next.from) <= 0) {
+                    prev = old;
+                    break;
+                }
+            }
+            if (prev == null || prev.to.equals(next.to)) continue;
+            TariffChange change = between(prev, next);
+            if (change != null) out.add(change);
+        }
+        return out;
+    }
+
+    private static boolean sameKey(List<Invoice> list, Invoice invoice) {
+        if (list == null) return false;
+        for (Invoice old : list) {
+            if (old != null && old.key().equals(invoice.key())) return true;
+        }
+        return false;
+    }
+
+    private static void addUnique(List<Invoice> list, Invoice invoice) {
+        for (Invoice old : list) {
+            if (old.key().equals(invoice.key())) return;
+        }
+        list.add(invoice);
     }
 
     private static String join(List<String> parts) {

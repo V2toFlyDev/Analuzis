@@ -17,6 +17,7 @@ public class Invoice {
     public double pe, pp1, pp2, ps;   // precios reales: energía, potencia P1/P2, excedentes
     public double pe1, pe2, pe3;      // energía por tramo (0 si la factura tiene precio único)
     public double peNow;              // energía vigente hoy (0 = no se leyó aparte: vale pe)
+    public double pp1Now, pp2Now;     // potencia vigente hoy (0 = vale pp1/pp2)
     public double bono, rent;         // €/día bono social y contador
     public double taxKwh;             // €/kWh de impuesto eléctrico mínimo
     public double iee = 5.112696, iva = 21;
@@ -83,6 +84,8 @@ public class Invoice {
         i.peNow = b.peNow;
         i.pp1 = b.pp1;
         i.pp2 = b.pp2;
+        i.pp1Now = b.pp1Now;
+        i.pp2Now = b.pp2Now;
         i.ps = b.ps;
         i.bono = b.bono;
         i.rent = b.rent;
@@ -121,6 +124,8 @@ public class Invoice {
         o.put("pene", peNow);
         o.put("pp1", pp1);
         o.put("pp2", pp2);
+        o.put("pp1n", pp1Now);
+        o.put("pp2n", pp2Now);
         o.put("ps", ps);
         o.put("bono", bono);
         o.put("rent", rent);
@@ -162,6 +167,12 @@ public class Invoice {
         i.peNow = o.optDouble("pene", 0);
         i.pp1 = o.optDouble("pp1", 0);
         i.pp2 = o.optDouble("pp2", 0);
+        i.pp1Now = o.optDouble("pp1n", 0);
+        i.pp2Now = o.optDouble("pp2n", 0);
+        // Facturas guardadas antes de separar la potencia vigente: el efectivo es
+        // la mejor aproximación disponible.
+        if (i.pp1Now <= 0) i.pp1Now = i.pp1;
+        if (i.pp2Now <= 0) i.pp2Now = i.pp2;
         i.ps = o.optDouble("ps", 0);
         i.bono = o.optDouble("bono", 0);
         i.rent = o.optDouble("rent", 0);

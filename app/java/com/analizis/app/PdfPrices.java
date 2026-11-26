@@ -212,18 +212,24 @@ public class PdfPrices {
 
 
         // Si el periodo viene partido por un cambio de tarifa, el término de potencia
-        // son dos líneas: se usa el precio efectivo para reproducir la factura.
+        // son dos líneas: se usa el precio efectivo para reproducir la factura. Con una
+        // sola línea se conserva el precio exacto de la factura: recalcularlo desde un
+        // importe redondeado a céntimos cambia el precio en millonésimas y hacía creer
+        // que la tarifa había cambiado de un mes a otro. En ambos casos se guarda aparte
+        // el precio de la última línea, que es el vigente para comparar tarifas.
         if (b.invoiceDays > 0) {
-            double c1 = powerCost(t, "P1|punta");
-            double c2 = powerCost(t, "P2|valle");
-            if (c1 > 0 && b.p1 > 0) {
-                double eff = c1 / (b.p1 * b.invoiceDays);
+            double[] c1 = powerCharge(t, "P1|punta");
+            double[] c2 = powerCharge(t, "P2|valle");
+            if (c1[0] > 0 && b.p1 > 0 && c1[1] > 1) {
+                double eff = c1[0] / (b.p1 * b.invoiceDays);
                 if (eff > 0.0005 && eff < 1.20) b.pp1 = eff;
             }
-            if (c2 > 0 && b.p2 > 0) {
-                double eff = c2 / (b.p2 * b.invoiceDays);
+            if (c2[0] > 0 && b.p2 > 0 && c2[1] > 1) {
+                double eff = c2[0] / (b.p2 * b.invoiceDays);
                 if (eff > 0.0005 && eff < 1.20) b.pp2 = eff;
             }
+            if (c1[2] > 0) b.pp1Now = c1[2];
+            if (c2[2] > 0) b.pp2Now = c2[2];
         }
 
         int kp = kwhOf(KWH_P, t), kl = kwhOf(KWH_L, t), kv = kwhOf(KWH_V, t);
@@ -335,13 +341,13 @@ public class PdfPrices {
     }
 
     /**
-     * Importe total del término de potencia de un periodo, sumando sus líneas si el mes
-     * viene partido. El bloque acaba donde empieza el otro término o la sección siguiente.
+     * Suma, número de cargos y último precio del término de potencia de un periodo.
+     * El bloque acaba donde empieza el otro término o la sección siguiente.
      */
-    private static double powerCost(String t, String which) {
+    private static double[] powerCharge(String t, String which) {
         Matcher l = Pattern.compile("t[eé]rmino\\s+potencia\\s*(?:" + which + ")",
                 Pattern.CASE_INSENSITIVE).matcher(t);
-        if (!l.find()) return 0;
+        if (!l.find()) return new double[]{0, 0, 0};
         int start = l.end();
         int end = Math.min(t.length(), start + 400);
         Matcher next = Pattern.compile(
@@ -350,10 +356,28 @@ public class PdfPrices {
         next.region(start, end);
         if (next.find()) end = next.start();
         double sum = 0;
+        double last = 0;
+        int count = 0;
         Matcher m = Pattern.compile(L_KWD + "\\s*([0-9]+[.,][0-9]+)\\s*€").matcher(t);
         m.region(start, end);
-        while (m.find()) sum += num(m.group(1));
-        return sum;
+        while (m.find()) {
+            sum += num(m.group(1));
+            count++;
+        }
+        if (count > 0) last = lastPowerPrice(t, start, end);
+        return new double[]{sum, count, last};
+    }
+
+    /** Último precio €/kW·día del bloque, que es el vigente si el mes viene partido. */
+    private static double lastPowerPrice(String t, int start, int end) {
+        Matcher m = Pattern.compile(L_KWD).matcher(t);
+        m.region(start, end);
+        double last = 0;
+        while (m.find()) {
+            Double v = closest(t, m.start(), m.end());
+            if (v != null && v > 0.0005 && v < 1.20) last = v;
+        }
+        return last;
     }
 
     private static String powerLabel(int n, String word) {

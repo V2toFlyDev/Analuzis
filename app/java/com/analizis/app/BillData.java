@@ -53,8 +53,12 @@ public class BillData {
     // periodo). Solo se usa para repreciar el año en el comparador; el cuadre va con `pe`.
     // 0 = no se leyó aparte (se usa `pe`).
     public double peNow = 0;
-    public double pp1 = 0;      // €/kW·día potencia P1
-    public double pp2 = 0;      // €/kW·día potencia P2
+    public double pp1 = 0;      // €/kW·día potencia P1 (efectiva del periodo)
+    public double pp2 = 0;      // €/kW·día potencia P2 (efectiva del periodo)
+    // Potencia **vigente hoy** (la última línea de cargo, no la media del periodo).
+    // 0 = no se leyó aparte: se usa pp1/pp2.
+    public double pp1Now = 0;
+    public double pp2Now = 0;
     public double ps = 0;       // €/kWh excedentes
     public double bono = 0;     // €/día financiación bono social
     public double rent = 0;     // €/día alquiler de contador
@@ -101,6 +105,8 @@ public class BillData {
         b.peNow = peNow;
         b.pp1 = pp1;
         b.pp2 = pp2;
+        b.pp1Now = pp1Now;
+        b.pp2Now = pp2Now;
         b.ps = ps;
         b.bono = bono;
         b.rent = rent;
@@ -219,7 +225,7 @@ public class BillData {
         Breakdown d = new Breakdown();
         if (!hasPrices() || kwhYear <= 0) return d;
         d.energy = energyCostYear();
-        d.power = (p1 * pp1 + p2 * pp2) * 365.0;
+        d.power = (p1 * nowPower1() + p2 * nowPower2()) * 365.0;
         d.bono = bono * 365.0;
         d.tax = kwhYear * taxKwh;
         double base = d.energy + d.power + d.bono + d.tax;
@@ -296,6 +302,15 @@ public class BillData {
     /** ¿Tengo los precios de la tarifa para poder reproducir la factura? */
     public boolean hasPrices() {
         return (pe > 0 || hasTramos()) && (pp1 > 0 || pp2 > 0);
+    }
+
+    /** Precio de potencia vigente hoy: el de la última línea o el efectivo si no se leyó aparte. */
+    public double nowPower1() {
+        return pp1Now > 0 ? pp1Now : pp1;
+    }
+
+    public double nowPower2() {
+        return pp2Now > 0 ? pp2Now : pp2;
     }
 
     /** Los tres precios de energía por tramo (si falta alguno, se usa el precio único). */
